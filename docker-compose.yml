@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: app_api_py_app
+    build: .
+    env_file:
+      - .env
+    command: bash -c "
+      uvicorn src.main:app
+      --host 0.0.0.0 --port 8080
+      --reload --log-level debug
+      "
+    volumes:
+      - .:/home/code
+    ports:
+      - "8080:8080"
