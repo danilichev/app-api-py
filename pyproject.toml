@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "app-api-py"
+version = "0.1.0"
+description = ""
+authors = ["danilichev <v.danilichev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.110.0"
+pydantic = "^2.6.4"
+pydantic-settings = "^2.2.1"
+python-dotenv = "^1.0.1"
+uvicorn = "^0.28.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
