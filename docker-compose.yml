@@ -15,3 +15,28 @@ services:
       - .:/home/code
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    container_name: app_api_py_db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    volumes:
+      - app_api_py_postgresql_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $DB_NAME -U $DB_USER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  app_api_py_postgresql_data: {}

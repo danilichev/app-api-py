@@ -28,10 +28,11 @@ FROM install as app-image
 
 ENV PYTHONPATH=/home/code/ PYTHONHASHSEED=0
 
-COPY tests/ tests/
+COPY alembic/ alembic/
 COPY src/ src/
-COPY .env ./
+COPY tests/ tests/
+COPY .env alembic.ini ./
 
-RUN addgroup --system --gid 1001 "app-user"
-RUN adduser --system --uid 1001 "app-user"
-USER "app-user"
+RUN addgroup --system --gid 1001 "appuser"
+RUN adduser --system --uid 1001 "appuser"
+USER "appuser"
