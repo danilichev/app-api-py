@@ -16,6 +16,7 @@ uvicorn = "^0.28.0"
 sqlalchemy = "^2.0.28"
 asyncpg = "^0.29.0"
 alembic = "^1.13.1"
+websockets = "^12.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.3.3"
