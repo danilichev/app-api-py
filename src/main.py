@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from src.api.command import router as command_router
+from src.api.file import router as file_router
+from src.api.instruction import router as instruction_router
 from src.api.ping import router as ping_router
 from src.api.post import router as post_router
-from src.api.command import router as command_router
 from src.api.ws.websocket_route import websocket_endpoint
 from .config import config
 
@@ -12,6 +14,8 @@ print(config.db_url)
 app = FastAPI()
 
 app.include_router(command_router)
+app.include_router(file_router)
+app.include_router(instruction_router)
 app.include_router(ping_router)
 app.include_router(post_router)
 
