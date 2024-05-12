@@ -10,5 +10,5 @@ router = APIRouter()
 async def upload_file_endpoint(
     file: UploadFile,
 ):
-    await write_temp_file(file)
-    return {"filename": file.filename}
+    file_path = await write_temp_file(file)
+    return {"success": bool(file_path)}

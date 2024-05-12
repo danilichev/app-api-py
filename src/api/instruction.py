@@ -1,6 +1,7 @@
-from typing import List
-from fastapi import APIRouter, status
-from pydantic import BaseModel
+from typing import Annotated, List
+from fastapi import APIRouter, Query, status
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 from src.services.instruction_manager import manager as instruction_manager
 
@@ -10,6 +11,10 @@ class GetInstructionsResponseDto(BaseModel):
 
 
 class PostInstructionDto(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+    )
     client_id: str
     instruction: str
 
@@ -26,7 +31,7 @@ router = APIRouter()
     response_model=GetInstructionsResponseDto,
     status_code=status.HTTP_200_OK,
 )
-async def get_instruciton_endpoint(client_id: str):
+async def get_instruciton_endpoint(client_id: Annotated[str, Query(alias="clientId")]):
     instructions = instruction_manager.get_instructions(client_id)
     return GetInstructionsResponseDto(instructions=instructions)
 
