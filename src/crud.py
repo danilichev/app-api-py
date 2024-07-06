@@ -1,24 +1,27 @@
-from typing import Any, TypeVar, Type
+from typing import Any, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# async def find_by_id(db_session: AsyncSession, model, id: Any):
-#     result = await db_session.execute(select(model).where(model.id == id))
-#     return result.scalars().first()
-
-
 Model = TypeVar("Model")
 
 
-async def find_by_id(db_session: AsyncSession, model: Model, id: Any) -> Model:
-    result = await db_session.execute(select(model).where(model.id == id))
-    return result.scalars().first()
+async def create(db_session: AsyncSession, model: Model) -> Model:
+    db_session.add(model)
+    await db_session.commit()
+    await db_session.refresh(model)
+    return model
 
 
-async def find_by(db_session: AsyncSession, model, attribute: str, value: Any):
+async def find_by(
+    db_session: AsyncSession, model: Model, attribute: str, value: Any
+) -> Model | None:
     result = await db_session.execute(
         select(model).where(getattr(model, attribute) == value)
     )
     return result.scalars().first()
+
+
+async def find_by_id(db_session: AsyncSession, model: Model, id: Any) -> Model | None:
+    result = await find_by(db_session, model, "id", id)
+    return result
