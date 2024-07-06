@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class CreatePostDto(BaseModel):
-    title: str = Field(min_length=3, max_length=100)
     content: str
+    title: str = Field(min_length=3, max_length=100)
 
 
 class PostDto(CreatePostDto):
