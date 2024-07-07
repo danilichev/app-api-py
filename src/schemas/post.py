@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
@@ -7,4 +9,4 @@ class CreatePostDto(BaseModel):
 
 
 class PostDto(CreatePostDto):
-    id: str
+    id: UUID

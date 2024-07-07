@@ -38,5 +38,14 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:latest
+    container_name: app_api_py_redis_redis
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    entrypoint: redis-server --appendonly yes
+
 volumes:
   app_api_py_postgresql_data: {}
