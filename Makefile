@@ -2,6 +2,10 @@
 docker-apply-db-migrations:
 	docker-compose run --rm app alembic upgrade head
 
+.PHONY: docker-build
+docker-build:
+	docker-compose build
+
 .PHONY: docker-clean
 docker-clean:
 	docker-compose down -v --remove-orphans | true
