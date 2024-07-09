@@ -21,6 +21,12 @@ docker-create-db-migration:
 docker-up:
 	docker-compose up --remove-orphans
 
-.PHONY: run-dev
-run-dev:
-	uvicorn src.main:app --port 8080 --reload
+.PHONY: init
+init:
+	pyenv local
+	python -m venv .venv
+	cd .venv/bin && source activate
+	.venv/bin/pip install -U pip setuptools ipykernel
+	.venv/bin/pip install poetry
+	.venv/bin/poetry env use `pyenv which python`
+	.venv/bin/poetry install
