@@ -15,7 +15,9 @@ router = APIRouter(prefix="/post")
 async def create_post_endpoint(
     post: CreatePostDto, db_session: AsyncSession = Depends(get_db)
 ):
-    new_post = await create(db_session, Post(title=post.title, content=post.content))
+    new_post = await create(
+        db_session, Post(content=post.content, title=post.title, user_id=post.user_id)
+    )
     return PostMapper.model_to_dto(new_post)
 
 

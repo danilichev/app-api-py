@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
-from src.api import ping, post
+from src.api import ping, post, user
 from src.database.redis import get_cache, get_redis
 
 
@@ -26,3 +26,4 @@ route_config = {"prefix": "/api"}
 
 app.include_router(ping.router, **route_config)
 app.include_router(post.router, **route_config)
+app.include_router(user.router, **route_config)
