@@ -1,13 +1,22 @@
+import json
+import logging
 import time
 import jwt
+
+from fastapi import Request, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from redis.asyncio import Redis
+from typing import TypedDict
 
 from src.config import config
 from src.models.user import User
 
-from fastapi import Request, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+# https://github.com/pyca/bcrypt/issues/684
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
-from .redis import get_from_redis, set_to_redis
+
+def get_redis(request: Request) -> Redis:
+    return request.app.redis
 
 
 class AuthBearer(HTTPBearer):
@@ -25,18 +34,24 @@ class AuthBearer(HTTPBearer):
                 status_code=403, detail="Invalid authentication scheme."
             )
 
-        if not await self.verify_jwt(request, credentials.credentials):
+        redis = get_redis(request)
+
+        token_payload = await redis.get(credentials.credentials)
+
+        if not token_payload:
             raise HTTPException(status_code=403, detail="Invalid or expired token.")
 
         return credentials.credentials
 
-    async def verify_jwt(self, request: Request, token: str) -> bool:
-        payload = await get_from_redis(request, token)
-        return bool(payload)
+
+class AccessTokenPayload(TypedDict):
+    email: str
+    expiry: float
+    platform: str
 
 
-async def create_access_token(user: User, request: Request):
-    payload = {
+async def create_access_token(user: User, request: Request) -> str | None:
+    payload: AccessTokenPayload = {
         "email": user.email,
         "expiry": time.time() + config.jwt_expire,
         "platform": request.headers.get("User-Agent"),
@@ -44,6 +59,18 @@ async def create_access_token(user: User, request: Request):
 
     token = jwt.encode(payload, str(user.password), algorithm=config.jwt_algorithm)
 
-    saved = await set_to_redis(request, token, str(payload), ex=config.jwt_expire)
+    redis = get_redis(request)
+
+    saved = await redis.set(token, json.dumps(payload), ex=config.jwt_expire)
 
     return token if saved else None
+
+
+async def get_access_token_payload(
+    token: str, request: Request
+) -> AccessTokenPayload | None:
+    redis = get_redis(request)
+
+    payload = await redis.get(token)
+
+    return json.loads(payload) if payload else None

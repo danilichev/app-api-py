@@ -13,6 +13,12 @@ class CreateTokenDto(BaseModel):
     password: SecretStr
 
 
+class TokenPayloadDto(BaseModel):
+    email: EmailStr
+    expiry: float
+    platform: str
+
+
 class UserDto(BaseModel):
     email: EmailStr
     id: UUID
