@@ -3,20 +3,23 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, SecretStr
 
 
-class BaseUserDto(BaseModel):
-    email: EmailStr
-
-
 class TokenDto(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
 
-class UserDto(BaseUserDto):
+class CreateTokenDto(BaseModel):
+    email: EmailStr
+    password: SecretStr
+
+
+class UserDto(BaseModel):
+    email: EmailStr
     id: UUID
 
 
-class CreateUserDto(BaseUserDto):
+class CreateUserDto(BaseModel):
+    email: EmailStr
     password: SecretStr
 
 
