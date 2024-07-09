@@ -9,4 +9,5 @@ class PostMapper:
             content=post.content,
             id=str(post.id),
             title=post.title,
+            user_id=str(post.user_id),
         )

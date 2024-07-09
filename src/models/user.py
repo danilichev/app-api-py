@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from pydantic import SecretStr
 from sqlalchemy import String, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 
@@ -14,10 +14,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class User(Base):
     email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    id: Mapped[uuid.UUID] = mapped_column(
+    id: Mapped[uuid:UUID] = mapped_column(
         UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
     )
     password_hash: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    posts = relationship("Post", back_populates="user")
 
     @property
     def password(self):

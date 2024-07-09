@@ -1,7 +1,7 @@
-from typing import Any
-
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase
+
+from src.utils.strings import add_plural_suffix
 
 
 class Base(DeclarativeBase):
@@ -9,6 +9,4 @@ class Base(DeclarativeBase):
 
     @declared_attr
     def __tablename__(self) -> str:
-        return self.__name__.lower()
-
-    id: Any
+        return add_plural_suffix(self.__name__.lower())
