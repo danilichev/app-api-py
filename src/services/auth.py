@@ -6,6 +6,7 @@ import jwt
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TypedDict
 
 from src.config import config
@@ -74,3 +75,11 @@ async def get_access_token_payload(
     payload = await redis.get(token)
 
     return json.loads(payload) if payload else None
+
+
+async def get_current_user(
+    token: str, request: Request, db_session: AsyncSession
+) -> User | None:
+    token_payload = await get_access_token_payload(token, request)
+    user = await User.find_by_email(db_session, token_payload.get("email"))
+    return user

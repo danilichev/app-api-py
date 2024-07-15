@@ -6,11 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 Model = TypeVar("Model")
 
 
-async def create(db_session: AsyncSession, model: Model) -> Model:
-    db_session.add(model)
-    await db_session.commit()
-    await db_session.refresh(model)
-    return model
+async def create(db_session: AsyncSession, model: Model) -> Model | None:
+    try:
+        db_session.add(model)
+        await db_session.commit()
+        await db_session.refresh(model)
+        return model
+    except Exception:
+        await db_session.rollback()
 
 
 async def find_by(

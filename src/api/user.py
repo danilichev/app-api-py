@@ -11,8 +11,7 @@ from src.schemas.user import (
     TokenDto,
     UserDto,
 )
-from src.services.auth import AuthBearer, create_access_token, get_access_token_payload
-from src.services.crud import create, find_by
+from src.services.auth import AuthBearer, create_access_token, get_current_user
 
 
 router = APIRouter(prefix="/users")
@@ -24,7 +23,19 @@ router = APIRouter(prefix="/users")
 async def create_user_endpoint(
     user: CreateUserDto, request: Request, db_session: AsyncSession = Depends(get_db)
 ):
-    new_user = await create(db_session, User(email=user.email, password=user.password))
+    is_user_exists = bool(await User.find_by_email(db_session, user.email))
+
+    if is_user_exists:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
+        )
+
+    new_user = await User.create(db_session, email=user.email, password=user.password)
+
+    if new_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to create user"
+        )
 
     access_token = await create_access_token(new_user, request)
 
@@ -35,22 +46,19 @@ async def create_user_endpoint(
 
 
 @router.get("/me", response_model=UserDto)
-async def get_current_user(
+async def get_current_user_endpoint(
     request: Request,
     db_session: AsyncSession = Depends(get_db),
     token: str = Security(AuthBearer()),
 ):
-    token_payload = await get_access_token_payload(token, request)
-    user: User | None = await find_by(
-        db_session, User, "email", token_payload.get("email")
-    )
+    current_user = await get_current_user(token, request, db_session)
 
-    if not user:
+    if not current_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
-    return UserMapper.model_to_dto(user)
+    return UserMapper.model_to_dto(current_user)
 
 
 @router.post("/token", response_model=TokenDto, status_code=status.HTTP_201_CREATED)
@@ -59,7 +67,7 @@ async def create_token_endpoint(
     request: Request,
     db_session: AsyncSession = Depends(get_db),
 ):
-    user: User | None = await find_by(db_session, User, "email", credentials.email)
+    user = await User.find_by_email(db_session, credentials.email)
 
     if not user:
         raise HTTPException(
