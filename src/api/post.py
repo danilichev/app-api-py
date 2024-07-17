@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.db import get_db
+from src.infra.db import get_db
 from src.mappers.post import PostMapper
 from src.models.post import Post
 from src.schemas.post import CreatePostDto, PostDto
 from src.services.auth import AuthBearer, get_current_user
 
 
-router = APIRouter(prefix="/posts")
+router = APIRouter(prefix="/posts", tags=["posts"])
 
 
 @router.post("/", response_model=PostDto, status_code=status.HTTP_201_CREATED)

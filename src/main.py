@@ -1,11 +1,10 @@
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 
 from src.api import ping, post, user
-from src.database.redis import get_cache, get_redis
+from src.infra.redis import get_cache, get_redis
 
 
 @asynccontextmanager

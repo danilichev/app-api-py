@@ -1,20 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.db import get_db
+from src.infra.db import get_db
 from src.mappers.user import UserMapper
 from src.models.user import User
-from src.schemas.user import (
-    CreateTokenDto,
-    CreateUserDto,
-    CreateUserResponseDto,
-    TokenDto,
-    UserDto,
-)
+from src.schemas.auth import AuthTokenDto, CreateAuthTokenDto
+from src.schemas.user import CreateUserDto, CreateUserResponseDto, UserDto
 from src.services.auth import AuthBearer, create_access_token, get_current_user
 
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post(
@@ -61,9 +56,9 @@ async def get_current_user_endpoint(
     return UserMapper.model_to_dto(current_user)
 
 
-@router.post("/token", response_model=TokenDto, status_code=status.HTTP_201_CREATED)
+@router.post("/token", response_model=AuthTokenDto, status_code=status.HTTP_201_CREATED)
 async def create_token_endpoint(
-    credentials: CreateTokenDto,
+    credentials: CreateAuthTokenDto,
     request: Request,
     db_session: AsyncSession = Depends(get_db),
 ):
@@ -81,4 +76,4 @@ async def create_token_endpoint(
 
     access_token = await create_access_token(user, request)
 
-    return TokenDto(access_token=access_token)
+    return AuthTokenDto(access_token=access_token)

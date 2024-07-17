@@ -1,24 +1,8 @@
 from uuid import UUID
-
 from pydantic import EmailStr, SecretStr
 
+from .auth import AuthTokenDto
 from .base import BaseDto
-
-
-class TokenDto(BaseDto):
-    access_token: str
-    token_type: str = "bearer"
-
-
-class CreateTokenDto(BaseDto):
-    email: EmailStr
-    password: SecretStr
-
-
-class TokenPayloadDto(BaseDto):
-    email: EmailStr
-    expiry: float
-    platform: str
 
 
 class UserDto(BaseDto):
@@ -31,5 +15,5 @@ class CreateUserDto(BaseDto):
     password: SecretStr
 
 
-class CreateUserResponseDto(UserDto, TokenDto):
+class CreateUserResponseDto(UserDto, AuthTokenDto):
     pass

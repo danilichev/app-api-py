@@ -1,7 +1,6 @@
-from typing import Any, TypeVar
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any, TypeVar
 
 Model = TypeVar("Model")
 
