@@ -21,8 +21,8 @@ docker-create-db-migration:
 docker-up:
 	docker-compose up --remove-orphans
 
-.PHONY: init
-init:
+.PHONY: setup
+setup:
 	pyenv local
 	python -m venv .venv
 	cd .venv/bin && source activate

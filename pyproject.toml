@@ -16,7 +16,7 @@ passlib = "^1.7.4"
 pydantic = {version = "^2.6.4", extras = ["email"]}
 pydantic-settings = "^2.2.1"
 pyjwt = "^2.8.0"
-python = "^3.12"
+python = "^3.10"
 python-dotenv = "^1.0.1"
 redis = "^5.0.7"
 sqlalchemy = "^2.0.28"
