@@ -1,12 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, Security, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Security,
+    UploadFile,
+    status,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.infra.db import get_db
 from src.mappers.user import UserMapper
 from src.models.user import User
 from src.schemas.auth import AuthTokenDto, CreateAuthTokenDto
-from src.schemas.user import CreateUserDto, CreateUserResponseDto, UserDto
+from src.schemas.user import (
+    CreateUserDto,
+    CreateUserResponseDto,
+    UserDto,
+    UserEstimatedAgeDto,
+)
+from src.services.age_estimator import AgeEstimator
 from src.services.auth import AuthBearer, create_access_token, get_current_user
+from src.utils.guards import image_guard
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -38,6 +53,19 @@ async def create_user_endpoint(
         **UserMapper.model_to_dto(new_user).model_dump(),
         access_token=access_token,
     )
+
+
+@router.post("/age-estimation", response_model=UserEstimatedAgeDto)
+async def get_age_estimation_endpoint(
+    image: UploadFile = Depends(image_guard()),
+    token: str = Security(AuthBearer()),
+):
+    estimated_age, err = await AgeEstimator().estimate_age(image)
+
+    if err:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err)
+
+    return UserEstimatedAgeDto(estimated_age=estimated_age)
 
 
 @router.get("/me", response_model=UserDto)

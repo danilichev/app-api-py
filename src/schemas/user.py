@@ -17,3 +17,7 @@ class CreateUserDto(BaseDto):
 
 class CreateUserResponseDto(UserDto, AuthTokenDto):
     pass
+
+
+class UserEstimatedAgeDto(BaseDto):
+    estimated_age: int
