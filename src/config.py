@@ -15,9 +15,11 @@ class Config(BaseSettings):
     environment: str = os.getenv("ENVIRONMENT", "development")
     jwt_algorithm: str = os.getenv("JWT_ALGORITHM")
     jwt_expire: int = os.getenv("JWT_EXPIRE", 3600)
+    mivolo_checkpoints_path: str = os.getenv("MIVOLO_CHECKPOINTS_PATH")
     redis_db: str = os.getenv("REDIS_DB", "0")
     redis_host: str = os.getenv("REDIS_HOST")
     redis_port: int = os.getenv("REDIS_PORT", 6379)
+    temp_dir: str = os.getenv("TEMP_DIR", "temp")
 
     @property
     def db_url(self) -> str:
@@ -41,3 +43,5 @@ class Config(BaseSettings):
 
 
 config = Config()
+
+print("path", config.mivolo_checkpoints_path)

@@ -38,7 +38,7 @@ async def create_post_endpoint(
     return PostMapper.model_to_dto(new_post)
 
 
-@router.get("/", response_model=PostDto, status_code=status.HTTP_200_OK)
+@router.get("/{post_id}", response_model=PostDto, status_code=status.HTTP_200_OK)
 async def get_post_endpoint(id: str, db_session: AsyncSession = Depends(get_db)):
     post = await Post.find_by_id(db_session, id)
 
